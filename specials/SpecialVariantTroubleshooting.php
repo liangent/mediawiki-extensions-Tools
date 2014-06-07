@@ -43,39 +43,31 @@ class SpecialVariantTroubleshooting extends SpecialPage {
 		$out->addHTML( Html::element( 'dd', array(), $this->nullString( $headerVariant ) ) );
 
 		$user = User::newFromName( $sub );
-		if ( $user ) {
-			$warning = Html::rawElement( 'dd', array(), 'This value might be incorrect until <a href="https://bugzilla.wikimedia.org/show_bug.cgi?id=64115">bug 64115</a> is fixed.' );
-		} else {
-			$warning = '';
+		if ( !$user ) {
 			$user = User::newFromID( 0 );
 		}
 
 		$out->addHTML( Html::element( 'dt', array(), 'User' ) );
-		$out->addHTML( $warning );
 		$out->addHTML( Html::element( 'dd', array(), $this->nullString( $user->getName() ) ) );
 
 		$userLanguage = $user->getOption( 'language' );
 
 		$out->addHTML( Html::element( 'dt', array(), 'User language option' ) );
-		$out->addHTML( $warning );
 		$out->addHTML( Html::element( 'dd', array(), $this->nullString( $userLanguage ) ) );
 
 		$userVariant = $user->getOption( 'variant' );
 
 		$out->addHTML( Html::element( 'dt', array(), 'User variant option' ) );
-		$out->addHTML( $warning );
 		$out->addHTML( Html::element( 'dd', array(), $this->nullString( $userVariant ) ) );
 
 		$gotUserVariant = $this->getUserVariant( $user );
 
 		$out->addHTML( Html::element( 'dt', array(), 'User variant' ) );
-		$out->addHTML( $warning );
 		$out->addHTML( Html::element( 'dd', array(), $this->nullString( $gotUserVariant ) ) );
 
 		$preferredVariant = $this->getPreferredVariant( $user );
 
 		$out->addHTML( Html::element( 'dt', array(), 'Preferred variant' ) );
-		$out->addHTML( $warning );
 		$out->addHTML( Html::element( 'dd', array(), $this->nullString( $preferredVariant ) ) );
 	}
 
