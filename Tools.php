@@ -26,15 +26,18 @@ $wgExtensionCredits['other'][] = array(
 // Register files
 $wgAutoloadClasses['ToolsHooks'] = __DIR__ . '/Tools.hooks.php';
 $wgAutoloadClasses['SpecialVariantTroubleshooting'] = __DIR__ . '/specials/SpecialVariantTroubleshooting.php';
+$wgAutoloadClasses['TemplateDuplicateArgumentsPage'] = __DIR__ . '/specials/SpecialTemplateDuplicateArguments.php';
 $wgMessagesDirs['Tools'] = __DIR__ . '/i18n';
 $wgExtensionMessagesFiles['ToolsAlias'] = __DIR__ . '/Tools.i18n.alias.php';
 
 // Register hooks
-#$wgHooks['NameOfHook'][] = 'ToolsHooks::onNameOfHook';
+$wgHooks['wgQueryPages'][] = 'ToolsHooks::onwgQueryPages';
 
 // Register special pages
 $wgSpecialPages['VariantTroubleshooting'] = 'SpecialVariantTroubleshooting';
 $wgSpecialPageGroups['VariantTroubleshooting'] = 'other';
+$wgSpecialPages['TemplateDuplicateArguments'] = 'TemplateDuplicateArgumentsPage';
+$wgSpecialPageGroups['TemplateDuplicateArguments'] = 'maintenance';
 
 // Register modules
 $wgResourceModules['ext.Tools.foo'] = array(
