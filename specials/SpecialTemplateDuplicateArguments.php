@@ -10,7 +10,7 @@
  *
  * @ingroup SpecialPage
  */
-class TemplateDuplicateArgumentsPage extends PageQueryPage {
+class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 
 	function __construct( $name = 'TemplateDuplicateArguments' ) {
 		parent::__construct( $name );
