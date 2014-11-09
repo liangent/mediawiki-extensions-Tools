@@ -4,5 +4,5 @@
     },
     "tools-desc": "Tools",
     "templateduplicatearguments": "Template Duplicate Arguments",
-    "tools-templateduplicatearguments-text": "The following pages:\n* ... are in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n* ... are not transcluded in any page that is not in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n* ... are not transcluding any page that is in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n\nso these pages are potential direct causes of such template calls."
+    "tools-templateduplicatearguments-text": "The following pages:\n* ... are in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n* ... are not transcluded in any page that is not in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n* ... are transcluded in some other pages\n* ... are not transcluding any page that is in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n\nso these pages are potential direct causes of such template calls."
 }
