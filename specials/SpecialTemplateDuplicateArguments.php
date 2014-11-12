@@ -117,4 +117,40 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 	protected function getGroupName() {
 		return 'maintenance';
 	}
+
+	/**
+	 * Add links to the live site to page links
+	 *
+	 * @param Skin $skin
+	 * @param object $row Result row
+	 * @return string
+	 */
+	public function formatResult( $skin, $row ) {
+		static $category = false;
+		if ( $category === false ) {
+			$cat = wfMessage( 'duplicate-args-category' )->inContentLanguage()->text();
+			$category = Title::makeTitleSafe( NS_CATEGORY, $cat );
+		}
+
+		$html = parent::formatResult( $skin, $row );
+		if ( !$category ) {
+			return $html;
+		}
+
+		$dbr = wfGetDB( DB_SLAVE );
+		if ( $dbr->selectField(
+			array( 'page', 'categorylinks' ),
+			'1',
+			array(
+				'page_namespace' => $row->namespace,
+				'page_title' => $row->title,
+				'page_id = cl_from',
+				'cl_to' => $category->getDBkey(),
+			)
+		) ) {
+			$html = Html::rawElement( 'del', array(), $html );
+		}
+
+		return $html;
+	}
 }
