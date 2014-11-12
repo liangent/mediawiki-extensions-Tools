@@ -15,6 +15,7 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 
 	function __construct( $name = 'TemplateDuplicateArguments' ) {
 		parent::__construct( $name );
+		$this->inCategory = array();
 	}
 
 	function getPageHeader() {
@@ -119,6 +120,44 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 	}
 
 	/**
+	 * Cache page existence for performance
+	 * @param DatabaseBase $db
+	 * @param ResultWrapper $res
+	 */
+	function preprocessResults( $db, $res ) {
+		if ( !$res->numRows() ) {
+			return;
+		}
+
+		$cat = wfMessage( 'duplicate-args-category' )->inContentLanguage()->text();
+		$category = Title::makeTitleSafe( NS_CATEGORY, $cat );
+
+		if ( !$category ) {
+			return;
+		}
+
+		foreach ( $db->select(
+			array( 'page', 'categorylinks' ),
+			array( 'page_namespace', 'page_title' ),
+			array(
+				'page_id = cl_from',
+				'cl_to' => $category->getDBkey(),
+				$db->makeList( array_map( function( $row ) use ( $db ) {
+					return $db->makeList( array(
+						'page_namespace' => $row->namespace,
+						'page_title' => $row->title,
+					), LIST_AND );
+				}, iterator_to_array( $res ) ), LIST_OR ),
+			)
+		) as $row ) {
+			$this->inCategory[$row->page_namespace][$row->page_title] = '';
+		}
+
+		// Back to start for display
+		$res->seek( 0 );
+	}
+
+	/**
 	 * Add links to the live site to page links
 	 *
 	 * @param Skin $skin
@@ -126,28 +165,10 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 	 * @return string
 	 */
 	public function formatResult( $skin, $row ) {
-		static $category = false;
-		if ( $category === false ) {
-			$cat = wfMessage( 'duplicate-args-category' )->inContentLanguage()->text();
-			$category = Title::makeTitleSafe( NS_CATEGORY, $cat );
-		}
-
 		$html = parent::formatResult( $skin, $row );
-		if ( !$category ) {
-			return $html;
-		}
 
 		$dbr = wfGetDB( DB_SLAVE );
-		if ( $dbr->selectField(
-			array( 'page', 'categorylinks' ),
-			'1',
-			array(
-				'page_namespace' => $row->namespace,
-				'page_title' => $row->title,
-				'page_id = cl_from',
-				'cl_to' => $category->getDBkey(),
-			)
-		) ) {
+		if ( !isset( $this->inCategory[$row->namespace][$row->title] ) ) {
 			$html = Html::rawElement( 'del', array(), $html );
 		}
 
