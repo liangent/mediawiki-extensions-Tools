@@ -39,7 +39,7 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 	 * @return bool
 	 */
 	function sortDescending() {
-		return false;
+		return true;
 	}
 
 	function getQueryInfo() {
@@ -52,12 +52,12 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 		$dbr = wfGetDB( DB_SLAVE );
 		return array(
 			'tables' => array(
-				'selfp' => 'page', 'selfcl' => 'categorylinks',
+				'selfp' => 'page', 'selfcl' => 'categorylinks', 'selftl' => 'templatelinks',
 			),
 			'fields' => array(
 				'namespace' => 'selfp.page_namespace',
 				'title' => 'selfp.page_title',
-				'value' => 'selfp.page_title'
+				'value' => 'COUNT(*)',
 			),
 			'conds' => array(
 				# in Category:<duplicate-args-category>
@@ -65,12 +65,12 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 				'selfcl.cl_to' => $category->getDBkey(),
 				# not transcluded in any page that is not in Category:<duplicate-args-category>
 				'NOT EXISTS (' . $dbr->selectSQLText(
-					array( 'templatelinks', 'childp' => 'page', 'childcl' => 'categorylinks' ),
+					array( 'childtl' => 'templatelinks', 'childp' => 'page', 'childcl' => 'categorylinks' ),
 					'*',
 					array(
-						'tl_from = childp.page_id',
-						'tl_namespace = selfp.page_namespace',
-						'tl_title = selfp.page_title',
+						'childtl.tl_from = childp.page_id',
+						'childtl.tl_namespace = selfp.page_namespace',
+						'childtl.tl_title = selfp.page_title',
 						'childcl.cl_from' => null,
 					),
 					__METHOD__,
@@ -86,27 +86,23 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 					)
 				) . ')',
 				# transcluded in some other pages
-				'EXISTS (' . $dbr->selectSQLText(
-					array( 'templatelinks', 'childp' => 'page' ),
-					'*',
-					array(
-						'tl_from = childp.page_id',
-						'tl_namespace = selfp.page_namespace',
-						'tl_title = selfp.page_title',
-					)
-				) . ')',
+				'selftl.tl_namespace = selfp.page_namespace',
+				'selftl.tl_title = selfp.page_title',
 				# not transcluding any page that is in Category:<duplicate-args-category>
 				'NOT EXISTS (' . $dbr->selectSQLText(
-					array( 'templatelinks', 'parentp' => 'page', 'parentcl' => 'categorylinks' ),
+					array( 'childtl' => 'templatelinks', 'parentp' => 'page', 'parentcl' => 'categorylinks' ),
 					'*',
 					array(
-						'tl_from = selfp.page_id',
-						'tl_namespace = parentp.page_namespace',
-						'tl_title = parentp.page_title',
+						'childtl.tl_from = selfp.page_id',
+						'childtl.tl_namespace = parentp.page_namespace',
+						'childtl.tl_title = parentp.page_title',
 						'parentcl.cl_from = parentp.page_id',
 						'parentcl.cl_to' => $category->getDBkey(),
 					)
 				) . ')',
+			),
+			'options' => array(
+				'GROUP BY' => array( 'namespace', 'title' ),
 			),
 		);
 	}
@@ -167,11 +163,29 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 	public function formatResult( $skin, $row ) {
 		$html = parent::formatResult( $skin, $row );
 
+		$title = Title::makeTitleSafe( $row->namespace, $row->title );
+		if ( $title ) {
+			$html = $this->getLanguage()->specialList( $html, $this->makeWlhLink( $title, $row ) );
+		}
+
 		$dbr = wfGetDB( DB_SLAVE );
 		if ( !isset( $this->inCategory[$row->namespace][$row->title] ) ) {
 			$html = Html::rawElement( 'del', array(), $html );
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Make a "what links here" link for a given title
+	 *
+	 * @param Title $title Title to make the link for
+	 * @param object $result Result row
+	 * @return string
+	 */
+	private function makeWlhLink( $title, $result ) {
+		$wlh = SpecialPage::getTitleFor( 'Whatlinkshere', $title->getPrefixedText() );
+		$label = $this->msg( 'nlinks' )->numParams( $result->value )->escaped();
+		return Linker::link( $wlh, $label, array(), array( 'hidelinks' => 1, 'hideredirs' => 1 ) );
 	}
 }
