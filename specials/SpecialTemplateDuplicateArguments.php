@@ -5,7 +5,7 @@
  * ... are in Category:<duplicate-args-category>
  * ... are not transcluded in any page that is not in Category:<duplicate-args-category>
  * ... are transcluded in some other pages
- * ... are not transcluding any page that is in Category:<duplicate-args-category>
+ * ... are not transcluding any page that is in Category:<duplicate-args-category> and not transcluding the current page
  *
  * so these pages are potential causes of pages using duplicate arguments in template calls.
  *
@@ -98,6 +98,16 @@ class TemplateDuplicateArgumentsPage extends LabsPageQueryPage {
 						'childtl.tl_title = parentp.page_title',
 						'parentcl.cl_from = parentp.page_id',
 						'parentcl.cl_to' => $category->getDBkey(),
+						# ... and not transcluding the current page
+						'NOT EXISTS (' . $dbr->selectSQLText(
+							array( 'recurtl' => 'templatelinks' ),
+							'*',
+							array(
+								'recurtl.tl_from = parentp.page_id',
+								'recurtl.tl_namespace = selfp.page_namespace',
+								'recurtl.tl_title = selfp.page_title',
+							)
+						) . ')',
 					)
 				) . ')',
 			),

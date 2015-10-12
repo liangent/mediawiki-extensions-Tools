@@ -26,6 +26,7 @@ $wgExtensionCredits['other'][] = array(
 // Register files
 $wgAutoloadClasses['ToolsHooks'] = __DIR__ . '/Tools.hooks.php';
 $wgAutoloadClasses['SpecialVariantTroubleshooting'] = __DIR__ . '/specials/SpecialVariantTroubleshooting.php';
+$wgAutoloadClasses['SpecialCompareArticleVariants'] = __DIR__ . '/specials/SpecialCompareArticleVariants.php';
 $wgAutoloadClasses['TemplateDuplicateArgumentsPage'] = __DIR__ . '/specials/SpecialTemplateDuplicateArguments.php';
 $wgMessagesDirs['Tools'] = __DIR__ . '/i18n';
 $wgExtensionMessagesFiles['ToolsAlias'] = __DIR__ . '/Tools.i18n.alias.php';
@@ -36,6 +37,8 @@ $wgHooks['wgQueryPages'][] = 'ToolsHooks::onwgQueryPages';
 // Register special pages
 $wgSpecialPages['VariantTroubleshooting'] = 'SpecialVariantTroubleshooting';
 $wgSpecialPageGroups['VariantTroubleshooting'] = 'other';
+$wgSpecialPages['CompareArticleVariants'] = 'SpecialCompareArticleVariants';
+$wgSpecialPageGroups['CompareArticleVariants'] = 'wiki';
 $wgSpecialPages['TemplateDuplicateArguments'] = 'TemplateDuplicateArgumentsPage';
 $wgSpecialPageGroups['TemplateDuplicateArguments'] = 'maintenance';
 
