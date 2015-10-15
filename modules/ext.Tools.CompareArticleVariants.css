@@ -1,0 +1,13 @@
+.mw-tools-cav-wrapper {
+	display: flex;
+}
+
+.mw-tools-cav-item {
+	flex: 1;
+	padding: 1em;
+	border-left: 1px solid #aaa;
+}
+
+.mw-tools-cav-item:first-child {
+	border-left: none;
+}

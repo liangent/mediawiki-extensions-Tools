@@ -4,6 +4,12 @@
     },
     "tools-desc": "Tools",
     "comparearticlevariants": "Compare article variants",
+    "tools-comparearticlevariants-article": "Article:",
+    "tools-comparearticlevariants-configuration": "Configuration:",
+    "tools-comparearticlevariants-variants": "Variants:",
+    "tools-comparearticlevariants-loading": "Loading...",
+    "tools-comparearticlevariants-missing": "Configuration $1 for variant $2 is missing.",
+    "tools-comparearticlevariants-broken": "Configuration $1 for variant $2 is broken.",
     "varianttroubleshooting": "Variant troubleshooting",
     "templateduplicatearguments": "Template duplicate arguments",
     "tools-templateduplicatearguments-text": "The following pages:\n* ... are in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n* ... are not transcluded in any page that is not in [[:Category:{{MediaWiki:Duplicate-args-category}}]]\n* ... are transcluded in some other pages\n* ... are not transcluding any page that is in [[:Category:{{MediaWiki:Duplicate-args-category}}]] and not transcluding the current page\n\nso these pages are potential direct causes of such template calls."

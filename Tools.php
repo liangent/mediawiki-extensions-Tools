@@ -43,16 +43,19 @@ $wgSpecialPages['TemplateDuplicateArguments'] = 'TemplateDuplicateArgumentsPage'
 $wgSpecialPageGroups['TemplateDuplicateArguments'] = 'maintenance';
 
 // Register modules
-$wgResourceModules['ext.Tools.foo'] = array(
+$wgResourceModules['ext.Tools.CompareArticleVariants'] = array(
 	'scripts' => array(
-		'modules/ext.Tools.foo.js',
+		'modules/ext.Tools.CompareArticleVariants.js',
 	),
 	'styles' => array(
-		'modules/ext.Tools.foo.css',
+		'modules/ext.Tools.CompareArticleVariants.css',
 	),
 	'messages' => array(
+		'tools-comparearticlevariants-missing',
+		'tools-comparearticlevariants-broken'
 	),
 	'dependencies' => array(
+		'jquery.highlightText'
 	),
 
 	'localBasePath' => __DIR__,
